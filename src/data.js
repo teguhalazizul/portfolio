@@ -3,7 +3,7 @@ export const profile = {
   roles: ["Software Developer", "Full-Stack Web & Android", "Machine Learning Enthusiast"],
   about:
     "Informatics Engineering student at Politeknik Caltex Riau focused on software development, web & mobile applications, and machine learning. Currently working as an IT Programmer at PT Amber Karya, handling all of the company's internal systems from design to deployment. Active in organizations and experienced in leading teams.",
-  email: "teguh23ti@mahasiswa.pcr.ac.id",
+  email: "teguhalazizul@gmail.com",
   linkedin: "https://www.linkedin.com/in/teguhalazizul",
   github: "https://github.com/teguhalazizul",
   booking: "https://cal.com/teguh-al-azizul/meeting-about-the-project?overlayCalendar=true",
