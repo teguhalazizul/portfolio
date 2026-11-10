@@ -47,7 +47,7 @@ const about = {
 };
 
 const statsRaw = [
-  { value: 3.75, decimals: 2, label: { en: "GPA / 4.00", id: "IPK / 4.00" } },
+  { value: 3.76, decimals: 2, label: { en: "GPA / 4.00", id: "IPK / 4.00" } },
   { value: 900, suffix: "+", label: { en: "Members led (ITSA)", id: "Anggota dipimpin (ITSA)" } },
   { value: 11, label: { en: "Projects built", id: "Proyek dibangun" } },
   { value: 9, label: { en: "Awards & achievements", id: "Penghargaan & prestasi" } },
