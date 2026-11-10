@@ -110,6 +110,85 @@ function Progress() {
   return <div className="progress" style={{ transform: `scaleX(${p})` }} />;
 }
 
+function Intro({ onReveal, onDone }) {
+  const [n, setN] = useState(0);
+  const [out, setOut] = useState(false);
+  const fired = useRef(false);
+  const finish = () => {
+    if (fired.current) return;
+    fired.current = true;
+    setOut(true);
+    onReveal();
+    setTimeout(onDone, 1100);
+  };
+  useEffect(() => {
+    let raf, s;
+    const tick = (ts) => {
+      s ??= ts;
+      const p = Math.min((ts - s) / 1900, 1);
+      setN(Math.round(100 * (1 - Math.pow(1 - p, 2.4))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else setTimeout(finish, 350);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return (
+    <div className={`intro ${out ? "out" : ""}`} onClick={finish}>
+      <div className="curtain top" /><div className="curtain bottom" />
+      <div className="intro-inner">
+        <div className="intro-count">{String(n).padStart(3, "0")}</div>
+        <div className="intro-name mono">Teguh Al Azizul — Portfolio</div>
+        <div className="intro-bar"><i style={{ transform: `scaleX(${n / 100})` }} /></div>
+      </div>
+      <span className="intro-skip mono">click to skip</span>
+    </div>
+  );
+}
+
+function Particles() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current, ctx = cv.getContext("2d");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const mouse = { x: -999, y: -999 };
+    let w, h, pts, raf;
+    const init = () => {
+      w = cv.clientWidth; h = cv.clientHeight;
+      cv.width = w * dpr; cv.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.min(Math.floor(w / 16), 80);
+      pts = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35 }));
+    };
+    const move = (e) => { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; };
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      const fg = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim() || "#fff";
+      ctx.fillStyle = fg; ctx.strokeStyle = fg;
+      for (let i = 0; i < pts.length; i++) {
+        const p = pts[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+        const dx = p.x - mouse.x, dy = p.y - mouse.y, dm = Math.hypot(dx, dy);
+        if (dm < 120 && dm > 0) { p.x += (dx / dm) * 1.2; p.y += (dy / dm) * 1.2; }
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, 6.283); ctx.fill();
+        for (let j = i + 1; j < pts.length; j++) {
+          const q = pts[j], d = Math.hypot(p.x - q.x, p.y - q.y);
+          if (d < 110) { ctx.globalAlpha = (1 - d / 110) * 0.35; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }
+        }
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    init(); draw();
+    window.addEventListener("resize", init);
+    window.addEventListener("mousemove", move);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", init); window.removeEventListener("mousemove", move); };
+  }, []);
+  return <canvas ref={ref} className="particles" aria-hidden="true" />;
+}
+
 function Nav({ theme, toggle, lang, toggleLang }) {
   const t = useT();
   const ids = ["about", "experience", "projects", "achievements", "contact"];
@@ -139,8 +218,21 @@ const Section = ({ id, no, title, children }) => (
 /* ---------- sections ---------- */
 function Hero() {
   const t = useT();
+  const ref = useRef(null);
+  const spot = (e) => {
+    const r = ref.current.getBoundingClientRect();
+    ref.current.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    ref.current.style.setProperty("--my", `${e.clientY - r.top}px`);
+  };
+  const tilt = (e) => {
+    const el = e.currentTarget, r = el.getBoundingClientRect();
+    el.style.setProperty("--rx", `${-((e.clientY - r.top) / r.height - 0.5) * 14}deg`);
+    el.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 14}deg`);
+  };
+  const untilt = (e) => { e.currentTarget.style.setProperty("--rx", "0deg"); e.currentTarget.style.setProperty("--ry", "0deg"); };
   return (
-    <section id="top" className="hero">
+    <section id="top" className="hero" ref={ref} onMouseMove={spot}>
+      <Particles />
       <div className="hero-text">
         <p className="mono hello"><span className="dot" /> {t.ui.hello}</p>
         <h1 aria-label={profile.name}>
@@ -161,9 +253,13 @@ function Hero() {
       </div>
       <div className="hero-photo">
         <div className="ring" />
-        <img src={photo} alt={t.ui.photoAlt} />
-        <span className="badge b1 mono">{t.ui.badgeGpa}</span>
-        <span className="badge b2 mono">{t.ui.badgeAward}</span>
+        <div className="photo-pop">
+          <div className="photo-card" onMouseMove={tilt} onMouseLeave={untilt}>
+            <img src={photo} alt={t.ui.photoAlt} />
+          </div>
+          <span className="badge b1 mono">{t.ui.badgeGpa}</span>
+          <span className="badge b2 mono">{t.ui.badgeAward}</span>
+        </div>
       </div>
       <a href="#about" className="scroll mono">scroll<i /></a>
     </section>
@@ -299,6 +395,12 @@ function Contact() {
 export default function App() {
   const [theme, setTheme] = useState(() => { try { return localStorage.getItem("theme") || "dark"; } catch { return "dark"; } });
   const [lang, setLang] = useState(() => { try { return localStorage.getItem("lang") || "en"; } catch { return "en"; } });
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const [intro, setIntro] = useState(!reduce);
+  const reveal = () => { document.documentElement.classList.add("ready"); document.body.classList.remove("lock"); };
+  useEffect(() => {
+    if (reduce) reveal(); else document.body.classList.add("lock");
+  }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem("theme", theme); } catch {}
@@ -307,8 +409,23 @@ export default function App() {
     document.documentElement.lang = lang;
     try { localStorage.setItem("lang", lang); } catch {}
   }, [lang]);
+  useEffect(() => {
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    const sel = ".btn,.nav-book";
+    const move = (e) => {
+      const b = e.target.closest?.(sel);
+      if (!b) return;
+      const r = b.getBoundingClientRect();
+      b.style.translate = `${(e.clientX - r.left - r.width / 2) * 0.25}px ${(e.clientY - r.top - r.height / 2) * 0.35}px`;
+    };
+    const out = (e) => { const b = e.target.closest?.(sel); if (b && !b.contains(e.relatedTarget)) b.style.translate = ""; };
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseout", out);
+    return () => { document.removeEventListener("mousemove", move); document.removeEventListener("mouseout", out); };
+  }, []);
   return (
     <LangCtx.Provider value={content(lang)}>
+      {intro && <Intro onReveal={reveal} onDone={() => setIntro(false)} />}
       <Cursor /><Progress />
       <Nav theme={theme} toggle={() => setTheme(theme === "dark" ? "light" : "dark")} lang={lang} toggleLang={() => setLang(lang === "en" ? "id" : "en")} />
       <main>

@@ -36,7 +36,8 @@ a{color:inherit;text-decoration:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 var(--mute)}100%{box-shadow:0 0 0 12px transparent}}
 h1{font-size:clamp(3rem,9vw,7.5rem);line-height:.95;font-weight:700;letter-spacing:-.04em}
 .word{display:block;overflow:hidden;padding-bottom:.08em}
-.letter{display:inline-block;transform:translateY(110%);animation:up .8s cubic-bezier(.2,.8,.2,1) forwards}
+.letter{display:inline-block;transform:translateY(110%)}
+.ready .letter{animation:up .8s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes up{to{transform:none}}
 .role{font-size:clamp(1.1rem,2.4vw,1.7rem);margin:1.6rem 0 1rem;min-height:2.2rem}
 .caret{display:inline-block;width:2px;height:1.1em;background:var(--fg);margin-left:4px;vertical-align:-.15em;animation:blink 1s steps(1) infinite}
@@ -48,8 +49,6 @@ h1{font-size:clamp(3rem,9vw,7.5rem);line-height:.95;font-weight:700;letter-spaci
 .btn.solid{background:var(--fg);color:var(--bg)}
 .btn.solid:hover{background:transparent;color:var(--fg)}
 .hero-photo{display:grid;place-items:center;animation:float 6s ease-in-out infinite}
-.hero-photo img{width:min(100%,380px);aspect-ratio:1;object-fit:cover;object-position:top;border-radius:50%;background:var(--card);border:1px solid var(--line);filter:grayscale(1) contrast(1.1);transition:filter .5s}
-.hero-photo:hover img{filter:grayscale(0)}
 .ring{position:absolute;width:min(112%,430px);aspect-ratio:1;border-radius:50%;border:1px dashed var(--mute);animation:spin 28s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes float{50%{transform:translateY(-14px)}}
@@ -142,3 +141,46 @@ main>.section:last-child{padding-bottom:6rem}
 .lang span{padding:.3rem .65rem;border-radius:99px;opacity:.55;transition:background .3s,color .3s,opacity .3s}
 .lang span.on{background:var(--fg);color:var(--bg);opacity:1}
 @media(max-width:760px){.nav{padding:.8rem 3vw}.nav nav{gap:.45rem}.theme{padding:.3rem .55rem;font-size:.7rem}.nav nav a.nav-book{padding:.35rem .65rem;font-size:.72rem}.lang{font-size:.7rem}.lang span{padding:.25rem .5rem}}
+
+/* ---- wow: intro, particles, photo card, entrance ---- */
+body.lock{overflow:hidden}
+.cursor{z-index:1100}
+.intro{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;color:#f5f5f5}
+.intro.out{pointer-events:none}
+.curtain{position:absolute;left:0;right:0;height:50.5%;background:#0a0a0a;transition:transform 1s cubic-bezier(.77,0,.18,1)}
+.curtain.top{top:0}.curtain.bottom{bottom:0}
+.intro.out .curtain.top{transform:translateY(-101%)}
+.intro.out .curtain.bottom{transform:translateY(101%)}
+.intro-inner{position:relative;text-align:center;width:min(80vw,560px);transition:opacity .5s,transform .7s}
+.intro.out .intro-inner{opacity:0;transform:translateY(-40px) scale(.96)}
+.intro-count{font-size:clamp(5rem,22vw,12rem);font-weight:700;letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums}
+.intro-name{letter-spacing:.35em;text-transform:uppercase;opacity:.7;margin-top:1rem;font-size:.7rem}
+.intro-bar{height:1px;background:rgba(255,255,255,.2);margin-top:2rem;overflow:hidden}
+.intro-bar i{display:block;height:100%;background:#fff;transform-origin:left}
+.intro-skip{position:absolute;bottom:2rem;right:4vw;opacity:.45;font-size:.7rem;transition:opacity .4s}
+.intro.out .intro-skip{opacity:0}
+
+.hero>canvas.particles{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.9;mask-image:linear-gradient(#000 55%,transparent);-webkit-mask-image:linear-gradient(#000 55%,transparent)}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(520px circle at var(--mx,60%) var(--my,35%),color-mix(in srgb,var(--fg) 11%,transparent),transparent 60%)}
+
+.photo-pop{position:relative;opacity:0;transform:scale(.86) translateY(40px)}
+.photo-card{--w:min(78vw,340px);width:var(--w);aspect-ratio:4/5;overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:calc(var(--w)/2) calc(var(--w)/2) 28px 28px;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out;box-shadow:0 30px 80px -30px color-mix(in srgb,var(--fg) 35%,transparent)}
+.photo-card img{width:100%;height:100%;object-fit:cover;object-position:50% 12%;display:block;filter:grayscale(1) contrast(1.08);transition:filter .6s,transform .8s}
+.photo-card:hover img{filter:grayscale(0);transform:scale(1.05)}
+.ring{width:min(118%,470px)}
+.b1{top:14%;left:-14%}.b2{bottom:12%;right:-12%}
+
+.hero-text>:not(h1){opacity:0}
+.ready .hero-text>:not(h1){animation:fadeUp .9s cubic-bezier(.2,.8,.2,1) forwards}
+.ready .hero-text>:nth-child(1){animation-delay:.05s}
+.ready .hero-text>:nth-child(3){animation-delay:.85s}
+.ready .hero-text>:nth-child(4){animation-delay:1s}
+.ready .hero-text>:nth-child(5){animation-delay:1.15s}
+.ready .photo-pop{animation:pop 1.2s .25s cubic-bezier(.2,.8,.2,1) forwards}
+.ready .nav{animation:navIn .9s .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes pop{to{opacity:1;transform:none}}
+@keyframes navIn{from{transform:translateY(-100%)}to{transform:none}}
+.btn,.nav nav a.nav-book{transition:transform .3s,background .3s,color .3s,opacity .3s,translate .25s cubic-bezier(.2,.8,.2,1)}
+@media(max-width:900px){.b1{left:-6%}.b2{right:-6%}}
+@media (prefers-reduced-motion:reduce){.hero-text>*,.photo-pop{opacity:1!important;transform:none!important}.intro{display:none}}
