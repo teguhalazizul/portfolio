@@ -1,6 +1,6 @@
 export const profile = {
   name: "Teguh Al Azizul",
-  email: "teguh23ti@mahasiswa.pcr.ac.id",
+  email: "teguhalazizul@gmail.com",
   linkedin: "https://www.linkedin.com/in/teguhalazizul",
   github: "https://github.com/teguhalazizul",
   booking: "https://cal.com/teguh-al-azizul/meeting-about-the-project?overlayCalendar=true",
