@@ -153,7 +153,7 @@ function Hero() {
       <div className="hero-photo">
         <div className="ring" />
         <img src={photo} alt="Photo of Teguh Al Azizul" />
-        <span className="badge b1 mono">GPA 3.76</span>
+        <span className="badge b1 mono">GPA 3.75</span>
         <span className="badge b2 mono">Outstanding Student 2026</span>
       </div>
       <a href="#about" className="scroll mono">scroll<i /></a>

@@ -3,7 +3,7 @@ export const profile = {
   roles: ["Software Developer", "Full-Stack Web & Android", "Machine Learning Enthusiast"],
   about:
     "Informatics Engineering student at Politeknik Caltex Riau focused on software development, web & mobile applications, and machine learning. Currently working as an IT Programmer at PT Amber Karya, handling all of the company's internal systems from design to deployment. Active in organizations and experienced in leading teams.",
-  email: "teguhalazizul@gmail.com",
+  email: "teguh23ti@mahasiswa.pcr.ac.id",
   linkedin: "https://www.linkedin.com/in/teguhalazizul",
   github: "https://github.com/teguhalazizul",
   booking: "https://cal.com/teguh-al-azizul/meeting-about-the-project?overlayCalendar=true",
@@ -12,7 +12,7 @@ export const profile = {
 export const stats = [
   { value: 3.75, decimals: 2, label: "GPA / 4.00" },
   { value: 900, suffix: "+", label: "Members led (ITSA)" },
-  { value: 8, label: "Projects built" },
+  { value: 11, label: "Projects built" },
   { value: 9, label: "Awards & achievements" },
 ];
 
@@ -32,6 +32,9 @@ export const experience = [
 ];
 
 export const projects = [
+  { title: "E-System: Integrated Manufacturing Information System", year: "2026", tags: ["PHP", "MySQL", "REST API"], desc: "Web-based manufacturing information system (PHP & MySQL) that integrates warehouse stock management, quality control, assets, and HR, complete with a REST API for Android applications." },
+  { title: "E-Inventory: Location-Based Stock Opname (Android + Web)", year: "2026", tags: ["Android", "Kotlin", "PHP", "MySQL"], desc: "Stock opname system with QR scanning, physical counting per location, auditor approval, and automatic label printing to replace the manual paper-based counting process." },
+  { title: "E-Stock: Warehouse Stock Management (Android)", year: "2026", tags: ["Android", "Kotlin", "Retrofit", "PHP"], desc: "Android app for incoming, outgoing, location transfer, adjustment, and stock take transactions in real time with barcode/QR scanning." },
   { title: "Smart Oil Palm Basket", year: "2026", tags: ["Kotlin", "Machine Learning", "IoT", "Python"], desc: "ML-based Android app that predicts harvest yields and detects weighing fraud for oil palm, integrated with IoT sensors to give farmers accurate, real-time data." },
   { title: "Digital Bank Jatah Indonesia", year: "2025", tags: ["React.js", "Tailwind CSS", "JavaScript"], desc: "Main contributor to the company profile website of a digital bank: modern, responsive interface that reflects the brand identity." },
   { title: "Plant Watering Prediction (AI)", year: "2025", tags: ["Python", "Scikit-learn", "Random Forest"], desc: "Classifies watering needs from soil moisture, temperature, pH, rainfall, and N-P-K nutrients with high accuracy." },
