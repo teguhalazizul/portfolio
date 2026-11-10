@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import photo from "./assets/photo.jpeg";
-import { profile, stats, experience, projects, achievements, orgs, skills } from "./data.js";
+import { profile, skills, content } from "./data.js";
+
+const LangCtx = createContext(content("en"));
+const useT = () => useContext(LangCtx);
 
 /* ---------- hooks & helpers ---------- */
 function useInView(once = true, threshold = 0.15) {
@@ -107,15 +110,20 @@ function Progress() {
   return <div className="progress" style={{ transform: `scaleX(${p})` }} />;
 }
 
-function Nav({ theme, toggle }) {
-  const links = [["about", "About"], ["experience", "Experience"], ["projects", "Projects"], ["achievements", "Achievements"], ["contact", "Contact"]];
+function Nav({ theme, toggle, lang, toggleLang }) {
+  const t = useT();
+  const ids = ["about", "experience", "projects", "achievements", "contact"];
   return (
     <header className="nav">
       <a href="#top" className="logo">TA<span>.</span></a>
       <nav>
-        {links.map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
-        <a className="nav-book" href={profile.booking} target="_blank" rel="noreferrer">Book a Session ↗</a>
-        <button className="theme" onClick={toggle} aria-label="Toggle theme">{theme === "dark" ? "◐ Light" : "◑ Dark"}</button>
+        {ids.map((id) => <a key={id} href={`#${id}`}>{t.ui.nav[id]}</a>)}
+        <a className="nav-book" href={profile.booking} target="_blank" rel="noreferrer">{t.ui.navBook}</a>
+        <button className="lang" onClick={toggleLang} aria-label={t.ui.langLabel}>
+          <span className={lang === "en" ? "on" : ""}>EN</span>
+          <span className={lang === "id" ? "on" : ""}>ID</span>
+        </button>
+        <button className="theme" onClick={toggle} aria-label={t.ui.themeLabel}>{theme === "dark" ? t.ui.light : t.ui.dark}</button>
       </nav>
     </header>
   );
@@ -130,10 +138,11 @@ const Section = ({ id, no, title, children }) => (
 
 /* ---------- sections ---------- */
 function Hero() {
+  const t = useT();
   return (
     <section id="top" className="hero">
       <div className="hero-text">
-        <p className="mono hello"><span className="dot" /> Available for new opportunities</p>
+        <p className="mono hello"><span className="dot" /> {t.ui.hello}</p>
         <h1 aria-label={profile.name}>
           {profile.name.split(" ").map((w, wi) => (
             <span className="word" key={wi}>
@@ -143,18 +152,18 @@ function Hero() {
             </span>
           ))}
         </h1>
-        <p className="role"><Typing words={profile.roles} /></p>
-        <p className="lead">Building web apps, Android apps, and machine learning solutions — from idea and system design to deployment.</p>
+        <p className="role"><Typing words={t.roles} /></p>
+        <p className="lead">{t.ui.lead}</p>
         <div className="cta">
-          <a className="btn solid" href="#projects">View Projects ↓</a>
-          <a className="btn" href="#contact">Contact Me</a>
+          <a className="btn solid" href="#projects">{t.ui.viewProjects}</a>
+          <a className="btn" href="#contact">{t.ui.contactMe}</a>
         </div>
       </div>
       <div className="hero-photo">
         <div className="ring" />
-        <img src={photo} alt="Photo of Teguh Al Azizul" />
-        <span className="badge b1 mono">GPA 3.75</span>
-        <span className="badge b2 mono">Outstanding Student 2026</span>
+        <img src={photo} alt={t.ui.photoAlt} />
+        <span className="badge b1 mono">{t.ui.badgeGpa}</span>
+        <span className="badge b2 mono">{t.ui.badgeAward}</span>
       </div>
       <a href="#about" className="scroll mono">scroll<i /></a>
     </section>
@@ -171,14 +180,15 @@ function Marquee() {
 }
 
 function About() {
+  const t = useT();
   return (
-    <Section id="about" no="01" title="About">
+    <Section id="about" no="01" title={t.ui.secAbout}>
       <div className="about">
-        <Reveal><p className="big">{profile.about}</p></Reveal>
+        <Reveal><p className="big">{t.about}</p></Reveal>
         <div className="stats">
-          {stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 100} className="stat">
-              <strong><Counter {...s} /></strong><span>{s.label}</span>
+          {t.stats.map((s, i) => (
+            <Reveal key={i} delay={i * 100} className="stat">
+              <strong><Counter value={s.value} decimals={s.decimals} suffix={s.suffix} /></strong><span>{s.label}</span>
             </Reveal>
           ))}
         </div>
@@ -188,11 +198,12 @@ function About() {
 }
 
 function Experience() {
+  const t = useT();
   return (
-    <Section id="experience" no="02" title="Experience">
+    <Section id="experience" no="02" title={t.ui.secExp}>
       <div className="timeline">
-        {experience.map((e, i) => (
-          <Reveal key={e.role} delay={i * 120} className="tl-item">
+        {t.experience.map((e, i) => (
+          <Reveal key={i} delay={i * 120} className="tl-item">
             <span className="tl-dot" />
             <p className="mono muted">{e.period}</p>
             <h3>{e.role} <em>@ {e.company}</em></h3>
@@ -200,10 +211,10 @@ function Experience() {
           </Reveal>
         ))}
       </div>
-      <Reveal><h3 className="sub">Organizations & Leadership</h3></Reveal>
+      <Reveal><h3 className="sub">{t.ui.orgsTitle}</h3></Reveal>
       <div className="grid2">
-        {orgs.map((o, i) => (
-          <Reveal key={o.role} delay={(i % 2) * 100} className="card">
+        {t.orgs.map((o, i) => (
+          <Reveal key={i} delay={(i % 2) * 100} className="card">
             <p className="mono muted">{o.period}</p>
             <h4>{o.role}</h4>
             <p className="where">{o.where}</p>
@@ -216,12 +227,13 @@ function Experience() {
 }
 
 function Projects() {
+  const t = useT();
   const [open, setOpen] = useState(0);
   return (
-    <Section id="projects" no="03" title="Selected Projects">
+    <Section id="projects" no="03" title={t.ui.secProj}>
       <div className="projects">
-        {projects.map((p, i) => (
-          <Reveal key={p.title} delay={(i % 4) * 60}>
+        {t.projects.map((p, i) => (
+          <Reveal key={i} delay={(i % 4) * 60}>
             <article className={`project ${open === i ? "open" : ""}`} onMouseEnter={() => setOpen(i)} onClick={() => setOpen(open === i ? -1 : i)}>
               <div className="p-row">
                 <span className="mono idx">{String(i + 1).padStart(2, "0")}</span>
@@ -231,7 +243,7 @@ function Projects() {
               </div>
               <div className="p-body"><div>
                 <p>{p.desc}</p>
-                <div className="tags">{p.tags.map((t) => <span key={t} className="mono">{t}</span>)}</div>
+                <div className="tags">{p.tags.map((tag) => <span key={tag} className="mono">{tag}</span>)}</div>
               </div></div>
             </article>
           </Reveal>
@@ -242,11 +254,12 @@ function Projects() {
 }
 
 function Achievements() {
+  const t = useT();
   return (
-    <Section id="achievements" no="04" title="Achievements">
+    <Section id="achievements" no="04" title={t.ui.secAch}>
       <div className="ach">
-        {achievements.map((a, i) => (
-          <Reveal key={a.title} delay={(i % 3) * 80} className="ach-item">
+        {t.achievements.map((a, i) => (
+          <Reveal key={i} delay={(i % 3) * 80} className="ach-item">
             <span className="mono year">{a.year}</span>
             <h4>{a.title}</h4>
             <p className="muted">{a.note}</p>
@@ -258,18 +271,19 @@ function Achievements() {
 }
 
 function Contact() {
+  const t = useT();
   return (
-    <Section id="contact" no="05" title="Contact">
+    <Section id="contact" no="05" title={t.ui.secContact}>
       <Reveal>
-        <a className="mail" href={`mailto:${profile.email}`}>Let's work together<span>{profile.email} ↗</span></a>
+        <a className="mail" href={`mailto:${profile.email}`}>{t.ui.letsWork}<span>{profile.email} ↗</span></a>
       </Reveal>
       <Reveal delay={60}>
         <div className="book">
           <div>
-            <h3>Want to discuss a project?</h3>
-            <p className="muted">Have an idea for a web app, Android app, or machine learning solution? Book a discussion session directly through my calendar.</p>
+            <h3>{t.ui.bookTitle}</h3>
+            <p className="muted">{t.ui.bookText}</p>
           </div>
-          <a className="btn solid" href={profile.booking} target="_blank" rel="noreferrer">Book a Session ↗</a>
+          <a className="btn solid" href={profile.booking} target="_blank" rel="noreferrer">{t.ui.bookBtn}</a>
         </div>
       </Reveal>
       <Reveal delay={120}>
@@ -283,18 +297,23 @@ function Contact() {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
+  const [theme, setTheme] = useState(() => { try { return localStorage.getItem("theme") || "dark"; } catch { return "dark"; } });
+  const [lang, setLang] = useState(() => { try { return localStorage.getItem("lang") || "en"; } catch { return "en"; } });
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem("theme", theme); } catch {}
   }, [theme]);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    try { localStorage.setItem("lang", lang); } catch {}
+  }, [lang]);
   return (
-    <>
+    <LangCtx.Provider value={content(lang)}>
       <Cursor /><Progress />
-      <Nav theme={theme} toggle={() => setTheme(theme === "dark" ? "light" : "dark")} />
+      <Nav theme={theme} toggle={() => setTheme(theme === "dark" ? "light" : "dark")} lang={lang} toggleLang={() => setLang(lang === "en" ? "id" : "en")} />
       <main>
         <Hero /><Marquee /><About /><Experience /><Projects /><Achievements /><Contact />
       </main>
-    </>
+    </LangCtx.Provider>
   );
 }
