@@ -10,7 +10,7 @@ export const profile = {
 };
 
 export const stats = [
-  { value: 3.75, decimals: 2, label: "GPA / 4.00" },
+  { value: 3.76, decimals: 2, label: "GPA / 4.00" },
   { value: 900, suffix: "+", label: "Members led (ITSA)" },
   { value: 11, label: "Projects built" },
   { value: 9, label: "Awards & achievements" },
