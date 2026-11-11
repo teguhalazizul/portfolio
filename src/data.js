@@ -22,6 +22,7 @@ const ui = {
     bookTitle: "Want to discuss a project?",
     bookText: "Have an idea for a web app, Android app, or machine learning solution? Book a discussion session directly through my calendar.",
     bookBtn: "Book a Session ↗",
+    stackTitle: "Tech Stack",
   },
   id: {
     nav: { about: "Tentang", experience: "Pengalaman", projects: "Proyek", achievements: "Prestasi", contact: "Kontak" },
@@ -35,6 +36,7 @@ const ui = {
     bookTitle: "Ingin diskusi rancang project?",
     bookText: "Punya ide web, aplikasi Android, atau solusi machine learning? Booking sesi diskusi langsung lewat kalender saya.",
     bookBtn: "Booking Sesi ↗",
+    stackTitle: "Tech Stack",
   },
 };
 
@@ -141,6 +143,33 @@ const orgsRaw = [
     desc: { en: "Guided new students throughout the campus introduction period.", id: "Membimbing mahasiswa baru selama masa pengenalan kampus." } },
 ];
 
+const stackRaw = [
+  { title: { en: "Languages", id: "Bahasa Pemrograman" }, items: [
+    { name: "Python", dev: "python" }, { name: "PHP", dev: "php" }, { name: "Kotlin", dev: "kotlin" }, { name: "Java", dev: "java" },
+    { name: "JavaScript", dev: "javascript" }, { name: "TypeScript", dev: "typescript" }, { name: "SQL / MySQL", dev: "mysql" },
+  ] },
+  { title: { en: "Frameworks & Tools", id: "Framework & Tools" }, items: [
+    { name: "React.js", dev: "react" }, { name: "Laravel", dev: "laravel" }, { name: "Tailwind CSS", dev: "tailwindcss" }, { name: "jQuery", dev: "jquery" },
+    { name: "Supabase", dev: "supabase" }, { name: "Android Studio", dev: "androidstudio" }, { name: "Git", dev: "git" }, { name: "Figma", dev: "figma" }, { name: "Unity", dev: "unity" },
+  ] },
+  { title: { en: "AI & Data", id: "AI & Data" }, items: [
+    { name: "Machine Learning", icon: "cpu" }, { name: "Data Analytics", icon: "chart" }, { name: "Scikit-learn", dev: "scikitlearn" },
+    { name: "Pandas", dev: "pandas" }, { name: "NumPy", dev: "numpy" }, { name: "ArcGIS", icon: "globe" },
+  ] },
+];
+
+export const stackAll = (() => {
+  const seen = new Set();
+  return stackRaw.flatMap((g) => g.items).filter((i) => !seen.has(i.name) && seen.add(i.name));
+})();
+
+const focusRaw = [
+  { icon: "globe", title: { en: "Full-Stack Web", id: "Full-Stack Web" }, text: { en: "Responsive web apps and REST APIs with PHP, Laravel, and React.js.", id: "Aplikasi web responsif dan REST API dengan PHP, Laravel, dan React.js." } },
+  { icon: "phone", title: { en: "Android Apps", id: "Aplikasi Android" }, text: { en: "Native Android apps in Kotlin & Java with barcode/QR scanning and real-time data.", id: "Aplikasi Android native dengan Kotlin & Java, lengkap scan barcode/QR dan data real-time." } },
+  { icon: "cpu", title: { en: "Machine Learning", id: "Machine Learning" }, text: { en: "Prediction and classification models with Python, Scikit-learn, and Pandas.", id: "Model prediksi dan klasifikasi dengan Python, Scikit-learn, dan Pandas." } },
+  { icon: "database", title: { en: "System & Database", id: "Sistem & Database" }, text: { en: "System design, database modeling, and server deployment, end to end.", id: "Perancangan sistem, pemodelan database, dan deployment server secara end-to-end." } },
+];
+
 const pick = (v, l) => (v && typeof v === "object" && !Array.isArray(v) && "en" in v ? v[l] : v);
 const flat = (o, l) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, pick(v, l)]));
 
@@ -155,5 +184,7 @@ export function content(lang) {
     projects: projectsRaw.map((x) => flat(x, l)),
     achievements: achievementsRaw.map((x) => flat(x, l)),
     orgs: orgsRaw.map((x) => flat(x, l)),
+    stack: stackRaw.map((x) => flat(x, l)),
+    focus: focusRaw.map((x) => flat(x, l)),
   };
 }

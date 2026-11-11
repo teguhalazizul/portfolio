@@ -1,9 +1,39 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import photo from "./assets/photo.jpeg";
-import { profile, skills, content } from "./data.js";
+import { profile, stackAll, content } from "./data.js";
 
 const LangCtx = createContext(content("en"));
 const useT = () => useContext(LangCtx);
+
+const lineIcons = {
+  globe: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>,
+  phone: <><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></>,
+  cpu: <><rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" /></>,
+  database: <><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></>,
+  chart: <><line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" /></>,
+  award: <><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></>,
+  code: <><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></>,
+  users: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
+};
+
+function Icon({ name, size = 22 }) {
+  return (
+    <svg className="li" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {lineIcons[name] || lineIcons.code}
+    </svg>
+  );
+}
+
+const DEV = (s) => `https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/${s}/${s}-original.svg`;
+
+function TechIcon({ item, size = 28 }) {
+  const [bad, setBad] = useState(false);
+  if (item.dev && !bad) {
+    return <img className="ico" src={DEV(item.dev)} alt="" width={size} height={size} loading="lazy" onError={() => setBad(true)} />;
+  }
+  return <Icon name={item.icon || "code"} size={size} />;
+}
+
 
 /* ---------- hooks & helpers ---------- */
 function useInView(once = true, threshold = 0.15) {
@@ -29,8 +59,14 @@ function useInView(once = true, threshold = 0.15) {
 
 function Reveal({ children, delay = 0, className = "" }) {
   const [ref, seen] = useInView();
+  const [d, setD] = useState(true);
+  useEffect(() => {
+    if (!seen) return;
+    const tm = setTimeout(() => setD(false), delay + 1000);
+    return () => clearTimeout(tm);
+  }, [seen, delay]);
   return (
-    <div ref={ref} className={`reveal ${seen ? "in" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+    <div ref={ref} className={`reveal ${seen ? "in" : ""} ${className}`} style={{ transitionDelay: `${d ? delay : 0}ms` }}>
       {children}
     </div>
   );
@@ -259,6 +295,9 @@ function Hero() {
           </div>
           <span className="badge b1 mono">{t.ui.badgeGpa}</span>
           <span className="badge b2 mono">{t.ui.badgeAward}</span>
+          {[["react", "c1"], ["kotlin", "c2"], ["python", "c3"], ["php", "c4"]].map(([s, c]) => (
+            <span key={s} className={`chip ${c}`}><TechIcon item={{ dev: s }} size={24} /></span>
+          ))}
         </div>
       </div>
       <a href="#about" className="scroll mono">scroll<i /></a>
@@ -267,10 +306,16 @@ function Hero() {
 }
 
 function Marquee() {
-  const row = [...skills, ...skills];
+  const row = [...stackAll, ...stackAll];
   return (
     <div className="marquee" aria-hidden="true">
-      <div className="track">{row.map((s, i) => <span key={i}>{s}<b>✦</b></span>)}</div>
+      <div className="track">
+        {row.map((s, i) => (
+          <span key={i} className="mq-item">
+            <span className="mq"><TechIcon item={s} size={26} />{s.name}</span><b>✦</b>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -288,6 +333,28 @@ function About() {
             </Reveal>
           ))}
         </div>
+        <div className="focus">
+          {t.focus.map((f, i) => (
+            <Reveal key={i} delay={i * 90} className="focus-card">
+              <span className="focus-ic"><Icon name={f.icon} size={26} /></span>
+              <h4>{f.title}</h4>
+              <p className="muted">{f.text}</p>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal><h3 className="sub">{t.ui.stackTitle}</h3></Reveal>
+        {t.stack.map((g, gi) => (
+          <div key={gi} className="stack-group">
+            <Reveal><p className="mono muted stack-cap">{g.title}</p></Reveal>
+            <div className="tiles">
+              {g.items.map((it, i) => (
+                <Reveal key={it.name} delay={(i % 8) * 50} className="tile">
+                  <TechIcon item={it} size={30} /><span>{it.name}</span>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </Section>
   );
@@ -356,7 +423,7 @@ function Achievements() {
       <div className="ach">
         {t.achievements.map((a, i) => (
           <Reveal key={i} delay={(i % 3) * 80} className="ach-item">
-            <span className="mono year">{a.year}</span>
+            <div className="ach-top"><span className="mono year">{a.year}</span><Icon name="award" size={20} /></div>
             <h4>{a.title}</h4>
             <p className="muted">{a.note}</p>
           </Reveal>
@@ -384,8 +451,8 @@ function Contact() {
       </Reveal>
       <Reveal delay={120}>
         <div className="cta">
-          <a className="btn solid" href={profile.github} target="_blank" rel="noreferrer">GitHub ↗</a>
-          <a className="btn" href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>
+          <a className="btn solid ic" href={profile.github} target="_blank" rel="noreferrer"><TechIcon item={{ dev: "github", icon: "code" }} size={18} />GitHub ↗</a>
+          <a className="btn ic" href={profile.linkedin} target="_blank" rel="noreferrer"><TechIcon item={{ dev: "linkedin", icon: "users" }} size={18} />LinkedIn ↗</a>
         </div>
       </Reveal>
     </Section>
